@@ -1,8 +1,8 @@
 import { Module } from '@nestjs/common';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { DataSource } from 'typeorm';
 
-import { AWS } from '@config';
 import { AppController } from './app.controller';
 import { AppService } from 'app.service';
 import { User } from 'entity/user';
@@ -10,15 +10,20 @@ import { UserModule } from 'user/user.module';
 
 @Module({
   imports: [
-    TypeOrmModule.forRoot({
-      type: 'mysql',
-      host: AWS.RDS.host,
-      port: AWS.RDS.port,
-      username: AWS.RDS.username,
-      password: AWS.RDS.password,
-      database: AWS.RDS.database,
-      entities: [User],
-      synchronize: true,
+    ConfigModule.forRoot({ isGlobal: true }),
+    TypeOrmModule.forRootAsync({
+      imports: [ConfigModule],
+      useFactory: (configService: ConfigService) => ({
+        type: 'mysql',
+        host: configService.get<string>('RDS_HOST'),
+        port: configService.get<number>('RDS_PORT'),
+        username: configService.get<string>('RDS_USERNAME'),
+        password: configService.get<string>('RDS_PASSWORD'),
+        database: configService.get<string>('RDS_DATABASE'),
+        entities: [User],
+        synchronize: true,
+      }),
+      inject: [ConfigService],
     }),
     UserModule,
   ],
