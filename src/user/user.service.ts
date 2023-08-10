@@ -10,10 +10,10 @@ import { User } from '../entity/user';
 export class UserService {
   constructor(
     @InjectRepository(User)
-    private userRepository: Repository<User>,
+    private readonly userRepository: Repository<User>
   ) {}
 
-  async findOne(uid: string): Promise<User | null> {
+  async findOne(uid: string) {
     return await this.userRepository.findOneBy({ uid });
   }
 
