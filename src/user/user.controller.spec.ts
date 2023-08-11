@@ -1,9 +1,10 @@
 import { Test, TestingModule } from '@nestjs/testing';
+import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 
-import { User } from '../entity/user';
+import { User } from '@src/entity/user';
 
-import { AppModule } from '../app.module';
+import { DatabaseModule } from '@src/database/database.module';
 import { UserController } from './user.controller';
 import { UserService } from './user.service';
 
@@ -12,7 +13,11 @@ describe('UserController', () => {
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      imports: [AppModule, TypeOrmModule.forFeature([User])],
+      imports: [
+        ConfigModule.forRoot(),
+        DatabaseModule,
+        TypeOrmModule.forFeature([User]),
+      ],
       controllers: [UserController],
       providers: [UserService],
     }).compile();
@@ -20,7 +25,9 @@ describe('UserController', () => {
     controller = module.get<UserController>(UserController);
   });
 
-  it('should be defined', () => {
-    expect(controller).toBeDefined();
+  it('get all users', async () => {
+    const users = await controller.getUsers();
+
+    expect(users).toBeInstanceOf(Array<User>);
   });
 });

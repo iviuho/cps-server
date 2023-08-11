@@ -14,25 +14,31 @@ interface TokenApiResponse {
 
 @Injectable()
 export class TokenService {
+  private readonly clientId: string;
+  private readonly clientSecret: string;
+
   constructor(
     @InjectRepository(AppAccessToken)
     private readonly tokenRepository: Repository<AppAccessToken>,
-    private readonly httpService: HttpService,
-    private readonly configService: ConfigService
-  ) {}
+    private readonly configService: ConfigService,
+    private readonly httpService: HttpService
+  ) {
+    const clientId = this.configService.getOrThrow('TWITCH_CLIENT_ID');
+    const clientSecret = this.configService.getOrThrow('TWITCH_CLIENT_SECRET');
 
-  async getTokenFromApi(): Promise<TokenApiResponse> {
-    const clientId = this.configService.get('TWITCH_CLIENT_ID');
-    const clientSecret = this.configService.get('TWITCH_CLIENT_SECRET');
+    this.clientId = clientId;
+    this.clientSecret = clientSecret;
 
     console.log(`clientId: ${clientId}`);
     console.log(`clientSecret: ${clientSecret}`);
+  }
 
+  async getTokenFromApi(): Promise<TokenApiResponse> {
     const response = await this.httpService.axiosRef.post(
       'https://id.twitch.tv/oauth2/token',
       {
-        client_id: clientId,
-        client_secret: clientSecret,
+        client_id: this.clientId,
+        client_secret: this.clientSecret,
         grant_type: 'client_credentials',
       }
     );
