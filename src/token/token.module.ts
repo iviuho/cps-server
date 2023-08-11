@@ -2,7 +2,7 @@ import { Module } from '@nestjs/common';
 import { HttpModule } from '@nestjs/axios';
 import { TypeOrmModule } from '@nestjs/typeorm';
 
-import { AppAccessToken } from '../entity/token';
+import { AppAccessToken } from '@src/entity/token';
 
 import { TokenService } from './token.service';
 
