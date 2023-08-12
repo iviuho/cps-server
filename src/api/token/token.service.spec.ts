@@ -6,7 +6,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { AppAccessToken } from '@src/entity/token';
 
 import { DatabaseModule } from '@src/database/database.module';
-import { TokenService } from '@src/token/token.service';
+import { TokenService } from '@src/api/token/token.service';
 
 describe('TokenService', () => {
   let service: TokenService;
@@ -25,7 +25,8 @@ describe('TokenService', () => {
     service = module.get<TokenService>(TokenService);
   });
 
-  it('should be defined', () => {
-    expect(service).toBeDefined();
+  it('get latest token', async () => {
+    const token = await service.findLatestToken();
+    expect(token).not.toBeNull();
   });
 });
