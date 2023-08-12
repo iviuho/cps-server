@@ -6,5 +6,8 @@ export class User {
   uid: string;
 
   @Column()
+  login: string;
+
+  @Column()
   nickname: string;
 }

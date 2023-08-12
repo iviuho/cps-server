@@ -24,10 +24,4 @@ describe('UserController', () => {
 
     controller = module.get<UserController>(UserController);
   });
-
-  it('get all users', async () => {
-    const users = await controller.getUsers();
-
-    expect(users).toBeInstanceOf(Array<User>);
-  });
 });

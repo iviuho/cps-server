@@ -4,25 +4,26 @@ import { Repository } from 'typeorm';
 
 import { User } from '@src/entity/user';
 
-// business logic
+import { ApiService } from '@src/api/api.service';
 
 @Injectable()
 export class UserService {
   constructor(
     @InjectRepository(User)
-    private readonly userRepository: Repository<User>
+    private readonly userRepository: Repository<User>,
+    private readonly apiService: ApiService
   ) {}
 
-  async findOne(uid: string) {
-    return await this.userRepository.findOneBy({ uid });
-  }
+  async getUserByLogin(login: string) {
+    const response = await this.apiService.getUser({ login });
 
-  async findAll(): Promise<User[]> {
-    return await this.userRepository.find();
-  }
+    if (response.data.length > 0) {
+      const { display_name: nickname, id: uid } = response.data[0];
+      const user: User = { login, nickname, uid };
 
-  async remove(uid: string): Promise<null> {
-    await this.userRepository.delete(uid);
+      return this.userRepository.save(user);
+    }
+
     return null;
   }
 }
