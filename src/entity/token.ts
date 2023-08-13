@@ -1,22 +1,21 @@
 import {
   Entity,
   Column,
-  PrimaryGeneratedColumn,
   CreateDateColumn,
-  Index,
+  UpdateDateColumn,
+  PrimaryColumn,
 } from 'typeorm';
 
 @Entity()
 export class AppAccessToken {
-  @PrimaryGeneratedColumn()
-  id: number;
+  @PrimaryColumn()
+  token: string;
 
   @CreateDateColumn()
-  @Index()
   createdAt: Date;
 
-  @Column()
-  token: string;
+  @UpdateDateColumn()
+  updatedAt: Date;
 
   @Column()
   expiresIn: number;

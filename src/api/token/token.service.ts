@@ -65,7 +65,7 @@ export class TokenService {
   }
 
   saveToken(token: TokenApiResponse) {
-    return this.tokenRepository.create({
+    return this.tokenRepository.save({
       expiresIn: token.expires_in,
       token: token.access_token,
     });
@@ -77,11 +77,12 @@ export class TokenService {
       select: {
         createdAt: true,
         expiresIn: true,
-        id: true,
         token: true,
       },
       where: {},
     });
+
+    console.log('token', token);
 
     let newToken: TokenApiResponse;
 
@@ -94,6 +95,8 @@ export class TokenService {
     } else {
       newToken = await this.getTokenFromApi();
     }
+
+    console.log('newToken', newToken);
 
     return this.saveToken(newToken);
   }
