@@ -3,6 +3,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 
 import { AppAccessToken } from '@src/entity/token';
+import { Comment } from '@src/entity/comment';
 import { User } from '@src/entity/user';
 
 @Module({
@@ -17,7 +18,7 @@ import { User } from '@src/entity/user';
         username: configService.get<string>('RDS_USERNAME'),
         password: configService.get<string>('RDS_PASSWORD'),
         database: configService.get<string>('RDS_DATABASE'),
-        entities: [AppAccessToken, User],
+        entities: [AppAccessToken, Comment, User],
         synchronize: true,
       }),
     }),

@@ -26,4 +26,17 @@ export class UserService {
 
     return null;
   }
+
+  async getCommentsByLogin(login: string) {
+    const user = await this.userRepository.findOne({
+      relations: {
+        comments: {
+          from: true,
+        },
+      },
+      where: { login },
+    });
+
+    return user?.comments;
+  }
 }

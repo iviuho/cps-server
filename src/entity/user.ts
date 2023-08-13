@@ -1,4 +1,6 @@
-import { Entity, Column, PrimaryColumn } from 'typeorm';
+import { Entity, Column, PrimaryColumn, JoinColumn, OneToMany } from 'typeorm';
+
+import { Comment } from './comment';
 
 @Entity()
 export class User {
@@ -10,4 +12,8 @@ export class User {
 
   @Column()
   nickname: string;
+
+  @OneToMany(() => Comment, comment => comment.to)
+  @JoinColumn()
+  comments?: Comment[];
 }
