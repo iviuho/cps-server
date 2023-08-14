@@ -14,29 +14,16 @@ export class UserService {
     private readonly apiService: ApiService
   ) {}
 
-  async getUserByLogin(login: string) {
-    const response = await this.apiService.getUser({ login });
-
-    if (response.data.length > 0) {
-      const { display_name: nickname, id: uid } = response.data[0];
-      const user: User = { login, nickname, uid };
-
-      return this.userRepository.save(user);
+  async getUserByLogin(login: string): Promise<User> {
+    try {
+      return await this.userRepository.findOneOrFail({ where: { login } });
+    } catch {
+      return this.getUserByLoginFromApi(login);
     }
-
-    return null;
   }
 
-  async getCommentsByLogin(login: string) {
-    const user = await this.userRepository.findOne({
-      relations: {
-        comments: {
-          from: true,
-        },
-      },
-      where: { login },
-    });
-
-    return user?.comments;
+  async getUserByLoginFromApi(login: string): Promise<User> {
+    const userDataFromApi = await this.apiService.getUser({ login });
+    return this.userRepository.save(userDataFromApi);
   }
 }
