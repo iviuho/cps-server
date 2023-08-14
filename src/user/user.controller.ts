@@ -1,4 +1,4 @@
-import { Controller, Param, Get } from '@nestjs/common';
+import { Controller, Param, Get, Patch } from '@nestjs/common';
 
 import { UserService } from './user.service';
 
@@ -11,8 +11,8 @@ export class UserController {
     return await this.userService.getUserByLogin(login);
   }
 
-  @Get(':id/comment')
-  async getComments(@Param('id') login: string) {
-    return await this.userService.getCommentsByLogin(login);
+  @Patch(':id')
+  async updateUser(@Param('id') login: string) {
+    return await this.userService.getUserByLoginFromApi(login);
   }
 }

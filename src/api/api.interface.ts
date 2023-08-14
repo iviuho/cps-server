@@ -1,4 +1,5 @@
 export type GetUserApiRequest = { id: string } | { login: string };
+export type GetUserApiResponse = { data: User[] };
 
 interface User {
   id: string;
@@ -12,8 +13,4 @@ interface User {
   view_count: number;
   email: string;
   created_at: string;
-}
-
-export interface GetUserApiResponse {
-  data: User[];
 }
