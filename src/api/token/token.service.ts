@@ -3,9 +3,10 @@ import { HttpService } from '@nestjs/axios';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 
-import { AppAccessToken } from '../../entity/token';
+import { AppAccessToken } from '@src/entity/token';
 
-import { ConfigService } from '@nestjs/config';
+import { ConfigService } from '@src/config/config.service';
+import { ValidateTokenApiResponse } from '@src/api/api.interface';
 
 interface TokenApiResponse {
   access_token: string;
@@ -18,24 +19,16 @@ export class TokenService {
   constructor(
     @InjectRepository(AppAccessToken)
     private readonly tokenRepository: Repository<AppAccessToken>,
-    private readonly configService: ConfigService,
-    private readonly httpService: HttpService
+    private readonly httpService: HttpService,
+    private readonly configService: ConfigService
   ) {}
-
-  get clientId(): string {
-    return this.configService.getOrThrow('TWITCH_CLIENT_ID');
-  }
-
-  get clientSecret(): string {
-    return this.configService.getOrThrow('TWITCH_CLIENT_SECRET');
-  }
 
   private async getTokenFromApi() {
     const response = await this.httpService.axiosRef.post<TokenApiResponse>(
       'https://id.twitch.tv/oauth2/token',
       {
-        client_id: this.clientId,
-        client_secret: this.clientSecret,
+        client_id: this.configService.clientId,
+        client_secret: this.configService.clientSecret,
         grant_type: 'client_credentials',
       },
       { headers: { 'Content-Type': 'application/x-www-form-urlencoded' } }
@@ -48,8 +41,8 @@ export class TokenService {
     const response = await this.httpService.axiosRef.post<TokenApiResponse>(
       'https://id.twitch.tv/oauth2/token',
       {
-        client_id: this.clientId,
-        client_secret: this.clientSecret,
+        client_id: this.configService.clientId,
+        client_secret: this.configService.clientSecret,
         grant_type: 'refresh_token',
         refresh_token: token,
       },
@@ -59,9 +52,13 @@ export class TokenService {
     return response.data;
   }
 
-  private isValidToken({ createdAt, expiresIn }: AppAccessToken) {
-    const now = Date.now();
-    return now < createdAt.getTime() + expiresIn * 1000;
+  private async validateTokenFromApi({ token }: AppAccessToken) {
+    const response = await this.httpService.axiosRef.get<ValidateTokenApiResponse>(
+      'https://id.twitch.tv/oauth2/validate',
+      { headers: { Authorization: `OAuth ${token}` } }
+    );
+
+    return response.status === 200;
   }
 
   saveToken(token: TokenApiResponse) {
@@ -82,21 +79,21 @@ export class TokenService {
       where: {},
     });
 
-    console.log('token', token);
-
     let newToken: TokenApiResponse;
 
     if (token) {
-      if (this.isValidToken(token)) {
+      const isValid = await this.validateTokenFromApi(token);
+
+      if (isValid) {
         return token;
       }
 
+      console.log('refresh token from api');
       newToken = await this.refreshTokenFromApi(token);
     } else {
+      console.log('generate token from api');
       newToken = await this.getTokenFromApi();
     }
-
-    console.log('newToken', newToken);
 
     return this.saveToken(newToken);
   }
