@@ -1,3 +1,5 @@
+import { EventsubStatus } from '@src/entity/eventsub';
+
 export type ValidateTokenApiResponse = {
   client_id: string;
   login: string;
@@ -35,23 +37,47 @@ export type SubscribeApiRequest = {
   };
 };
 
+export interface Subscription {
+  id: string;
+  status: EventsubStatus;
+  type: string;
+  version: string;
+  condition: object;
+  created_at: string;
+  transport: {
+    method: 'webhook' | 'websocket';
+    callback: string;
+    session_id: string;
+    connected_at: string;
+  };
+  cost: number;
+}
+
 export type SubscribeApiResponse = {
-  data: {
-    id: string;
-    status: string;
-    type: string;
-    version: string;
-    condition: object;
-    created_at: string;
-    transport: {
-      method: 'webhook' | 'websocket';
-      callback: string;
-      session_id: string;
-      connected_at: string;
-    };
-    cost: number;
-  }[];
+  data: Subscription[];
   total: number;
   total_cost: number;
   max_total_cost: number;
 };
+
+export interface WebhookDto<EventResponse = any> {
+  challenge?: string;
+  subscription: Subscription;
+  event?: EventResponse;
+}
+
+export const enum EventsubHeader {
+  MESSAGE_ID = 'Twitch-Eventsub-Message-Id',
+  MESSAGE_RETRY = 'Twitch-Eventsub-Message-Retry',
+  MESSAGE_TYPE = 'Twitch-Eventsub-Message-Type',
+  MESSAGE_SIGNATURE = 'Twitch-Eventsub-Message-Signature',
+  MESSAGE_TIMESTAMP = 'Twitch-Eventsub-Message-Timestamp',
+  SUBSCRIPTION_TYPE = 'Twitch-Eventsub-Subscription-Type',
+  SUBSCRIPTION_VERSION = 'Twitch-Eventsub-Subscription-Version',
+}
+
+export const enum EventsubMessageType {
+  NOTIFICATION = 'notification',
+  VERIFICATION = 'webhook_callback_verification',
+  REVOCATION = 'revocation',
+}
