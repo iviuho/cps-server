@@ -1,6 +1,7 @@
-import { Entity, Column, PrimaryColumn, JoinColumn, OneToMany } from 'typeorm';
+import { Entity, Column, PrimaryColumn, OneToMany } from 'typeorm';
 
 import { Comment } from './comment';
+import { Eventsub } from './eventsub';
 
 @Entity()
 export class User {
@@ -14,6 +15,8 @@ export class User {
   nickname: string;
 
   @OneToMany(() => Comment, comment => comment.to)
-  @JoinColumn()
   comments?: Comment[];
+
+  @OneToMany(() => Eventsub, eventsub => eventsub.target)
+  eventsubs?: Eventsub[];
 }

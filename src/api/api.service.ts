@@ -1,5 +1,13 @@
 import { HttpService } from '@nestjs/axios';
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  ConflictException,
+  ForbiddenException,
+  HttpStatus,
+  Injectable,
+  NotFoundException,
+  UnauthorizedException,
+} from '@nestjs/common';
 
 import { User } from '@src/entity/user';
 
@@ -15,21 +23,42 @@ export class ApiService {
     private readonly tokenService: TokenService
   ) {}
 
-  async getUser(params: GetUserApiRequest): Promise<User> {
+  private async getCredential() {
     const { token } = await this.tokenService.findLatestToken();
 
+    return {
+      Authorization: `Bearer ${token}`,
+      'Client-Id': this.configService.clientId,
+    };
+  }
+
+  private HttpError(status: number) {
+    switch (status) {
+      case HttpStatus.BAD_REQUEST:
+        return new BadRequestException();
+      case HttpStatus.UNAUTHORIZED:
+        return new UnauthorizedException();
+      case HttpStatus.FORBIDDEN:
+        return new ForbiddenException();
+      case HttpStatus.NOT_FOUND:
+        return new NotFoundException();
+      case HttpStatus.CONFLICT:
+        return new ConflictException();
+      default:
+        return new Error(`api request failed with status code: ${status}`);
+    }
+  }
+
+  async getUser(params: GetUserApiRequest): Promise<User> {
     const response = await this.httpService.axiosRef.get<GetUserApiResponse>('https://api.twitch.tv/helix/users', {
-      headers: {
-        Authorization: `Bearer ${token}`,
-        'Client-Id': this.configService.clientId,
-      },
+      headers: await this.getCredential(),
       params,
     });
 
     const { status, data } = response;
     const [userDataFromApi] = data.data;
 
-    if (status === 200 && userDataFromApi) {
+    if (status === HttpStatus.OK && userDataFromApi) {
       const user: User = {
         login: userDataFromApi.login,
         nickname: userDataFromApi.display_name,
@@ -39,43 +68,40 @@ export class ApiService {
       return user;
     }
 
-    throw new NotFoundException();
+    throw this.HttpError(status);
   }
 
   async subscribeEvent(params: SubscribeApiRequest) {
-    const { token } = await this.tokenService.findLatestToken();
+    params.transport.secret = this.configService.clientSecret;
 
     const response = await this.httpService.axiosRef.post<SubscribeApiResponse>(
       'https://api.twitch.tv/helix/eventsub/subscriptions',
       params,
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
-          'Client-Id': this.configService.clientId,
-        },
-      }
+      { headers: await this.getCredential() }
     );
 
     const { status, data } = response;
     const [subscription] = data.data;
 
-    if (status === 200) {
+    if (status === HttpStatus.ACCEPTED) {
       return subscription;
     }
 
-    throw Error('subsribe failed');
+    throw this.HttpError(status);
   }
 
-  async subscribeChannelPointRedemption(channel: string) {
-    return await this.subscribeEvent({
-      type: 'channel.channel_points_custom_reward_redemption.add',
-      version: '1',
-      condition: { broadcaster_user_id: channel },
-      transport: {
-        method: 'webhook',
-        callback: 'https://cps-server.com/webhook',
-        secret: this.configService.clientSecret,
-      },
+  async unsubscribeEvent(id: string) {
+    const response = await this.httpService.axiosRef.delete('https://api.twitch.tv/helix/eventsub/subscriptions', {
+      headers: await this.getCredential(),
+      params: { id },
     });
+
+    const { status } = response;
+
+    if (status === HttpStatus.NO_CONTENT) {
+      return;
+    }
+
+    throw this.HttpError(status);
   }
 }

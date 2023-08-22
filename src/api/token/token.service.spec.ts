@@ -13,12 +13,7 @@ describe('TokenService', () => {
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      imports: [
-        ConfigModule.forRoot(),
-        DatabaseModule,
-        TypeOrmModule.forFeature([AppAccessToken]),
-        HttpModule,
-      ],
+      imports: [ConfigModule.forRoot(), DatabaseModule, TypeOrmModule.forFeature([AppAccessToken]), HttpModule],
       providers: [TokenService],
     }).compile();
 
