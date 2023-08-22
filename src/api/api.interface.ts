@@ -81,3 +81,11 @@ export const enum EventsubMessageType {
   VERIFICATION = 'webhook_callback_verification',
   REVOCATION = 'revocation',
 }
+
+export type AuthResult = {
+  code?: string;
+  scope?: string;
+  error?: string;
+  error_description?: string;
+  state?: string;
+};

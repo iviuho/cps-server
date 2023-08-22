@@ -1,4 +1,6 @@
-import { Entity, Column, PrimaryColumn } from 'typeorm';
+import { Entity, Column, PrimaryColumn, ManyToOne, UpdateDateColumn, DeleteDateColumn } from 'typeorm';
+
+import { User } from './user';
 
 export enum EventsubStatus {
   ENABLED = 'enabled',
@@ -16,10 +18,19 @@ export class Eventsub {
   @PrimaryColumn()
   id: string;
 
+  @ManyToOne(() => User, user => user.uid)
+  target: User;
+
   @Column()
   createdAt: Date;
 
-  @Column({ default: EventsubStatus.PENDING })
+  @UpdateDateColumn()
+  updatedAt: Date;
+
+  @DeleteDateColumn()
+  deletedAt: Date;
+
+  @Column({ default: EventsubStatus.PENDING, enum: EventsubStatus })
   status: EventsubStatus;
 
   @Column()
