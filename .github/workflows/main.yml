@@ -7,7 +7,36 @@ on:
     branches: ['main']
 
 env:
-  LIGHTSAIL_SSH_KEY: ${{ secrets.LIGHTSAIL_SSH_KEY }}
-  LIGHTSAIL_HOST: ${{ secrets.LIGHTSAIL_HOST }}
   LIGHTSAIL_USERNAME: bitnami
-  AWS_REGION: ap-northeast-2
+
+jobs:
+  build:
+    runs-on: ubuntu-18.04
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Set node.js version
+        uses: actions/setup-node@v2
+        with:
+          node-version: 18
+
+      - name: Install dependencies
+        run: yarn
+
+      - name: Build
+        run: yarn build
+
+      - name: Deploy
+        uses: appleboy/ssh-action@v0.1.6
+        with:
+          host: ${{ secrets.LIGHTSAIL_HOST }}
+          username: ${{ env.LIGHTSAIL_USERNAME }}
+          key: ${{ secrets.LIGHTSAIL_SSH_KEY }}
+          script: |
+            cd cps-server
+            git pull
+            yarn
+            yarn build
+            pm2 reload app
