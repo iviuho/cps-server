@@ -27,9 +27,6 @@ jobs:
       - name: Build
         run: yarn build
 
-  deploy:
-    runs-on: ubuntu-latest
-    steps:
       - name: Deploy
         uses: appleboy/ssh-action@v0.1.6
         with:
