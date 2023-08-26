@@ -11,6 +11,16 @@ export class EventsubController {
     return await this.eventsubService.getSubscriptions();
   }
 
+  @Post('/grant')
+  async subscribeUserGrant() {
+    return await this.eventsubService.subscribeUserGrant();
+  }
+
+  @Delete('/grant')
+  async unsubsribeUserGrant() {
+    return await this.eventsubService.unsubscribeUserGrant();
+  }
+
   @Post(':channel')
   async subscribe(@Param('channel') channel: string) {
     return await this.eventsubService.subscribe(channel);

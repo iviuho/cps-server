@@ -21,6 +21,32 @@ export class EventsubService {
     return subscriptions;
   }
 
+  async subscribeUserGrant(): Promise<Eventsub> {
+    const subscription = await this.apiService.subscribeEvent({
+      type: 'user.authorization.grant',
+      version: '1',
+      condition: { client_id: this.apiService.clientId },
+      transport: {
+        method: 'webhook',
+        callback: 'https://cps-server.com/webhook',
+      },
+    });
+
+    const eventsub = this.eventsubRepository.create({
+      ...subscription,
+      createdAt: subscription.created_at,
+    });
+
+    return await this.eventsubRepository.save(eventsub);
+  }
+
+  async unsubscribeUserGrant(): Promise<Eventsub> {
+    const subscription = await this.eventsubRepository.findOneOrFail({ where: { type: 'user.authorization.grant' } });
+
+    await this.apiService.unsubscribeEvent(subscription.id);
+    return await this.eventsubRepository.softRemove(subscription);
+  }
+
   async subscribe(channel: string): Promise<Eventsub> {
     const user = await this.userService.getUserByLogin(channel);
     const subscription = await this.apiService.subscribeEvent({
@@ -42,7 +68,7 @@ export class EventsubService {
     return await this.eventsubRepository.save(eventsub);
   }
 
-  async unsubsribe(channel: string) {
+  async unsubsribe(channel: string): Promise<Eventsub> {
     const subscription = await this.eventsubRepository.findOneOrFail({ where: { target: { login: channel } } });
 
     await this.apiService.unsubscribeEvent(subscription.id);

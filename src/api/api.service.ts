@@ -23,6 +23,14 @@ export class ApiService {
     private readonly tokenService: TokenService
   ) {}
 
+  get clientId() {
+    return this.configService.clientId;
+  }
+
+  get clientSecret() {
+    return this.configService.clientSecret;
+  }
+
   private async getCredential() {
     const { token } = await this.tokenService.findLatestToken();
 

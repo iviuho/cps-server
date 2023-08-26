@@ -19,7 +19,7 @@ export class Eventsub {
   id: string;
 
   @ManyToOne(() => User, user => user.uid)
-  target: User;
+  target?: User;
 
   @Column()
   createdAt: Date;
