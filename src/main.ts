@@ -7,7 +7,7 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   app.use(morgan(':remote-addr :remote-user [:date[iso]] ":method :url" :status :response-time ms'));
 
-  await app.listen(80);
+  await app.listen(3000);
 }
 
 bootstrap();
