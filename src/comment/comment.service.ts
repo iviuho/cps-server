@@ -20,12 +20,22 @@ export class CommentService {
 
     const { offset = 0, limit = 20 } = pagination;
 
-    return this.commentRepository.find({
+    return await this.commentRepository.find({
       order: { createdAt: 'DESC' },
       relations: { from: true, to: true },
       skip: offset * limit,
       take: limit,
       where: { to: { login: query.to }, from: { login: query.from } },
     });
+  }
+
+  async createComment(from_uid: string, to_uid: string, content: string): Promise<Comment> {
+    const comment = this.commentRepository.create({
+      from: { uid: from_uid },
+      to: { uid: to_uid },
+      content,
+    });
+
+    return await this.commentRepository.save(comment);
   }
 }

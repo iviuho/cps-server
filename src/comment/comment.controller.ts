@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Post, Query } from '@nestjs/common';
+import { Controller, Get, Query } from '@nestjs/common';
 
 import { CommentService } from './comment.service';
 import { CommentQuery, Pagination } from './comment.interface';
@@ -12,9 +12,6 @@ export class CommentController {
     const { to, from }: CommentQuery = query;
     const { offset, limit }: Pagination = query;
 
-    return await this.commentService.getCommentsByUser(
-      { to, from },
-      { offset, limit }
-    );
+    return await this.commentService.getCommentsByUser({ to, from }, { offset, limit });
   }
 }

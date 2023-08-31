@@ -1,5 +1,7 @@
 import { EventsubStatus } from '@src/entity/eventsub';
 
+import * as WebhookEvent from './event.interface';
+
 export type ValidateTokenApiResponse = {
   client_id: string;
   login: string;
@@ -63,7 +65,7 @@ export type SubscribeApiResponse = {
 export interface WebhookDto<EventResponse = any> {
   challenge?: string;
   subscription: Subscription;
-  event?: EventResponse;
+  event: EventResponse;
 }
 
 export const enum EventsubHeader {
@@ -82,10 +84,20 @@ export const enum EventsubMessageType {
   REVOCATION = 'revocation',
 }
 
-export type AuthResult = {
+export interface AuthPayload {
   code?: string;
   scope?: string;
   error?: string;
   error_description?: string;
   state?: string;
-};
+}
+
+export interface AuthSuccess extends AuthPayload {
+  code: string;
+  scope: string;
+}
+
+export interface AuthFailed extends AuthPayload {
+  error: string;
+  error_description: string;
+}
