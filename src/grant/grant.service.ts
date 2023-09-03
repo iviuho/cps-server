@@ -3,7 +3,6 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 
 import { Grant } from '@src/entity/grant';
-import { User } from '@src/entity/user';
 
 @Injectable()
 export class GrantService {
@@ -20,7 +19,13 @@ export class GrantService {
     }
   }
 
-  async createGrant(clientId: string, user: User): Promise<Grant> {
-    return await this.grantRepository.save({ clientId, user });
+  async createGrant(clientId: string, uid: string): Promise<Grant> {
+    const grant = await this.grantRepository.findOne({ where: { user: { uid } } });
+
+    if (grant) {
+      return await this.grantRepository.save({ ...grant, updatedAt: new Date() });
+    }
+
+    return await this.grantRepository.save({ clientId, user: { uid } });
   }
 }
