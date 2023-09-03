@@ -54,7 +54,8 @@ export class WebhookController {
 
       case EventsubMessageType.REVOCATION:
         console.log(`webhook revocation: ${subscription.id} - ${subscription.type}`);
-        // remove eventsub
+
+        await this.webhookService.revokeEventsub(subscription.id);
         return;
 
       default:

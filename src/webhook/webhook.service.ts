@@ -1,8 +1,10 @@
 import { Injectable } from '@nestjs/common';
 
+import { EventsubStatus } from '@src/entity/eventsub';
+
 import { CommentService } from '@src/comment/comment.service';
 import { EventsubService } from '@src/eventsub/eventsub.service';
-import { EventsubStatus } from '@src/entity/eventsub';
+import { GrantService } from '@src/grant/grant.service';
 import { UserService } from '@src/user/user.service';
 import * as EventDto from '@src/api/event.interface';
 
@@ -11,6 +13,7 @@ export class WebhookService {
   constructor(
     private readonly commentService: CommentService,
     private readonly eventsubService: EventsubService,
+    private readonly grantService: GrantService,
     private readonly userService: UserService
   ) {}
 
@@ -19,8 +22,10 @@ export class WebhookService {
 
     switch (type) {
       case 'user.authorization.grant':
-        const { user_login } = event as EventDto.UserAuthGrant;
-        await this.userService.getUserByLoginFromApi(user_login);
+        const { client_id, user_id, user_login, user_name } = event as EventDto.UserAuthGrant;
+
+        const user = await this.userService.createUser(user_id, user_login, user_name);
+        await this.grantService.createGrant(client_id, user);
         break;
 
       case 'channel.channel_points_custom_reward_redemption.add':
@@ -37,5 +42,9 @@ export class WebhookService {
 
   async enableEventsub(subscriptionId: string) {
     await this.eventsubService.changeEventsubStatus(subscriptionId, EventsubStatus.ENABLED);
+  }
+
+  async revokeEventsub(subscriptionId: string) {
+    await this.eventsubService.revokeSubscription(subscriptionId);
   }
 }

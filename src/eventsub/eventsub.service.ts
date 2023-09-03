@@ -75,6 +75,10 @@ export class EventsubService {
     return await this.eventsubRepository.softRemove(subscription);
   }
 
+  async revokeSubscription(id: string): Promise<Eventsub> {
+    return await this.eventsubRepository.softRemove({ id });
+  }
+
   async changeEventsubStatus(id: string, status: EventsubStatus): Promise<Eventsub> {
     return await this.eventsubRepository.save({ id, status });
   }

@@ -24,6 +24,10 @@ export class UserService {
 
   async getUserByLoginFromApi(login: string): Promise<User> {
     const userDataFromApi = await this.apiService.getUser({ login });
-    return this.userRepository.save(userDataFromApi);
+    return await this.userRepository.save(userDataFromApi);
+  }
+
+  async createUser(uid: string, login: string, nickname: string): Promise<User> {
+    return await this.userRepository.save({ uid, login, nickname });
   }
 }

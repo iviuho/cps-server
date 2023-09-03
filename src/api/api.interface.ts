@@ -1,7 +1,5 @@
 import { EventsubStatus } from '@src/entity/eventsub';
 
-import * as WebhookEvent from './event.interface';
-
 export type ValidateTokenApiResponse = {
   client_id: string;
   login: string;
