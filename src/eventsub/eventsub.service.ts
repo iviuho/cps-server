@@ -21,7 +21,7 @@ export class EventsubService {
     return subscriptions;
   }
 
-  async subscribeUserGrant(): Promise<Eventsub> {
+  async subscribeUserAuthorization(): Promise<Eventsub> {
     const subscription = await this.apiService.subscribeEvent({
       type: 'user.authorization.grant',
       version: '1',
@@ -40,7 +40,7 @@ export class EventsubService {
     return await this.eventsubRepository.save(eventsub);
   }
 
-  async unsubscribeUserGrant(): Promise<Eventsub> {
+  async unsubscribeUserAuthorization(): Promise<Eventsub> {
     const subscription = await this.eventsubRepository.findOneOrFail({ where: { type: 'user.authorization.grant' } });
 
     await this.apiService.unsubscribeEvent(subscription.id);

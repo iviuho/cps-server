@@ -17,7 +17,7 @@ export class WebhookController {
   constructor(private readonly tokenService: TokenService, private readonly webhookService: WebhookService) {}
 
   @Get()
-  async handleGrantUserRedirection(@Query() query: AuthPayload) {
+  async handleAuthorizationUserRedirection(@Query() query: AuthPayload) {
     if (query.code) {
       const { code, scope } = query as AuthSuccess;
       const token = await this.tokenService.generateUserAccessToken(code);

@@ -1,4 +1,4 @@
-export interface UserAuthGrant {
+export interface UserAuthorizationGrant {
   client_id: string;
   user_id: string;
   user_login: string;

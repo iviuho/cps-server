@@ -6,7 +6,7 @@ export class AuthorizationController {
   constructor(private readonly authorizationService: AuthorizationService) {}
 
   @Get(':uid')
-  async getGrantByUserId(@Param('uid') uid: string) {
-    return await this.authorizationService.getGrantByUserId(uid);
+  async getAuthorizationByUserId(@Param('uid') uid: string) {
+    return await this.authorizationService.getAuthorizationByUserId(uid);
   }
 }

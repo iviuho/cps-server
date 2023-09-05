@@ -22,10 +22,10 @@ export class WebhookService {
 
     switch (type) {
       case 'user.authorization.grant':
-        const { client_id, user_id, user_login, user_name } = event as EventDto.UserAuthGrant;
+        const { client_id, user_id, user_login, user_name } = event as EventDto.UserAuthorizationGrant;
 
         const { uid } = await this.userService.createUser(user_id, user_login, user_name);
-        await this.authorizationService.createGrant(client_id, uid);
+        await this.authorizationService.createAuthorization(client_id, uid);
         break;
 
       case 'channel.channel_points_custom_reward_redemption.add':
