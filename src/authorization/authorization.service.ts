@@ -2,16 +2,16 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 
-import { Grant } from '@src/entity/grant';
+import { Authorization } from '@src/entity/authorization';
 
 @Injectable()
-export class GrantService {
+export class AuthorizationService {
   constructor(
-    @InjectRepository(Grant)
-    private readonly grantRepository: Repository<Grant>
+    @InjectRepository(Authorization)
+    private readonly grantRepository: Repository<Authorization>
   ) {}
 
-  async getGrantByUserId(uid: string): Promise<Grant> {
+  async getGrantByUserId(uid: string): Promise<Authorization> {
     try {
       return await this.grantRepository.findOneOrFail({ where: { user: { uid } } });
     } catch {
@@ -19,7 +19,7 @@ export class GrantService {
     }
   }
 
-  async createGrant(clientId: string, uid: string): Promise<Grant> {
+  async createGrant(clientId: string, uid: string): Promise<Authorization> {
     const grant = await this.grantRepository.findOne({ where: { user: { uid } } });
 
     if (grant) {

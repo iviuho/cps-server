@@ -1,10 +1,10 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 
-import { AppAccessToken } from '@src/entity/token';
+import { Authorization } from '@src/entity/authorization';
 import { Comment } from '@src/entity/comment';
 import { Eventsub } from '@src/entity/eventsub';
-import { Grant } from '@src/entity/grant';
+import { Token } from '@src/entity/token';
 import { User } from '@src/entity/user';
 
 import { ConfigModule } from '@src/config/config.module';
@@ -17,7 +17,7 @@ import { ConfigService } from '@src/config/config.service';
       inject: [ConfigService],
       useFactory: (configService: ConfigService) => ({
         type: 'mysql',
-        entities: [AppAccessToken, Comment, Eventsub, Grant, User],
+        entities: [AppAccessToken, Authorization, Comment, Eventsub, User],
         synchronize: true,
         ...configService.rds,
       }),

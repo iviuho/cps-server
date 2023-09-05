@@ -11,7 +11,7 @@ import {
 import { User } from './user';
 
 @Entity()
-export class Grant {
+export class Authorization {
   @PrimaryGeneratedColumn()
   id: number;
 
