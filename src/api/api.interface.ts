@@ -1,5 +1,17 @@
 import { EventsubStatus } from '@src/entity/eventsub';
 
+export interface TokenApiResponse {
+  access_token: string;
+  expires_in: number;
+  token_type: string;
+}
+
+export interface UserAccessTokenResponse extends TokenApiResponse {
+  refresh_token: string;
+  scope: string[];
+  token_type: 'bearer';
+}
+
 export type ValidateTokenApiResponse = {
   client_id: string;
   login: string;

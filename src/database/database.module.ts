@@ -17,7 +17,7 @@ import { ConfigService } from '@src/config/config.service';
       inject: [ConfigService],
       useFactory: (configService: ConfigService) => ({
         type: 'mysql',
-        entities: [AppAccessToken, Authorization, Comment, Eventsub, User],
+        entities: [Authorization, Comment, Eventsub, Token, User],
         synchronize: true,
         ...configService.rds,
       }),

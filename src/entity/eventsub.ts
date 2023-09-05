@@ -30,7 +30,7 @@ export class Eventsub {
   @DeleteDateColumn()
   deletedAt: Date;
 
-  @Column({ default: EventsubStatus.PENDING, enum: EventsubStatus })
+  @Column({ default: EventsubStatus.PENDING, enum: EventsubStatus, type: 'enum' })
   status: EventsubStatus;
 
   @Column()

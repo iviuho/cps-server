@@ -3,7 +3,7 @@ import { HttpModule } from '@nestjs/axios';
 import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 
-import { AppAccessToken } from '@src/entity/token';
+import { Token, TokenType } from '@src/entity/token';
 
 import { DatabaseModule } from '@src/database/database.module';
 import { TokenService } from '@src/api/token/token.service';
@@ -13,7 +13,7 @@ describe('TokenService', () => {
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      imports: [ConfigModule.forRoot(), DatabaseModule, TypeOrmModule.forFeature([AppAccessToken]), HttpModule],
+      imports: [ConfigModule.forRoot(), DatabaseModule, TypeOrmModule.forFeature([Token]), HttpModule],
       providers: [TokenService],
     }).compile();
 
@@ -21,7 +21,7 @@ describe('TokenService', () => {
   });
 
   it('get latest token', async () => {
-    const token = await service.findLatestToken();
+    const token = await service.getToken(TokenType.App);
     expect(token).not.toBeNull();
   });
 });

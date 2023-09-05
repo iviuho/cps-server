@@ -3,27 +3,21 @@ import { HttpService } from '@nestjs/axios';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 
-import { AppAccessToken } from '@src/entity/token';
+import { Token, TokenType } from '@src/entity/token';
 
 import { ConfigService } from '@src/config/config.service';
-import { ValidateTokenApiResponse } from '@src/api/api.interface';
-
-interface TokenApiResponse {
-  access_token: string;
-  expires_in: number;
-  token_type: string;
-}
+import { TokenApiResponse, UserAccessTokenResponse, ValidateTokenApiResponse } from '@src/api/api.interface';
 
 @Injectable()
 export class TokenService {
   constructor(
-    @InjectRepository(AppAccessToken)
-    private readonly tokenRepository: Repository<AppAccessToken>,
+    @InjectRepository(Token)
+    private readonly tokenRepository: Repository<Token>,
     private readonly httpService: HttpService,
     private readonly configService: ConfigService
   ) {}
 
-  private async getTokenFromApi() {
+  private async getAppAccessToken() {
     const response = await this.httpService.axiosRef.post<TokenApiResponse>(
       'https://id.twitch.tv/oauth2/token',
       {
@@ -37,14 +31,15 @@ export class TokenService {
     return response.data;
   }
 
-  private async refreshTokenFromApi({ token }: AppAccessToken) {
-    const response = await this.httpService.axiosRef.post<TokenApiResponse>(
+  private async getUserAccessToken(code: string) {
+    const response = await this.httpService.axiosRef.post<UserAccessTokenResponse>(
       'https://id.twitch.tv/oauth2/token',
       {
         client_id: this.configService.clientId,
         client_secret: this.configService.clientSecret,
-        grant_type: 'refresh_token',
-        refresh_token: token,
+        code,
+        grant_type: 'authorization_code',
+        redirect_uri: 'http://localhost:3000/webhook',
       },
       { headers: { 'Content-Type': 'application/x-www-form-urlencoded' } }
     );
@@ -52,7 +47,22 @@ export class TokenService {
     return response.data;
   }
 
-  private async validateTokenFromApi({ token }: AppAccessToken) {
+  private async refreshToken({ refreshToken }: Token) {
+    const response = await this.httpService.axiosRef.post<TokenApiResponse>(
+      'https://id.twitch.tv/oauth2/token',
+      {
+        client_id: this.configService.clientId,
+        client_secret: this.configService.clientSecret,
+        grant_type: 'refresh_token',
+        refresh_token: refreshToken,
+      },
+      { headers: { 'Content-Type': 'application/x-www-form-urlencoded' } }
+    );
+
+    return response.data;
+  }
+
+  private async validateToken({ token }: Token) {
     const response = await this.httpService.axiosRef.get<ValidateTokenApiResponse>(
       'https://id.twitch.tv/oauth2/validate',
       { headers: { Authorization: `OAuth ${token}` } }
@@ -61,40 +71,76 @@ export class TokenService {
     return response.status === 200;
   }
 
-  saveToken(token: TokenApiResponse) {
-    return this.tokenRepository.save({
-      expiresIn: token.expires_in,
-      token: token.access_token,
-    });
+  private async saveToken(type: TokenType, response: TokenApiResponse | UserAccessTokenResponse): Promise<Token> {
+    switch (type) {
+      case TokenType.App:
+        return await this.tokenRepository.save({
+          expiresIn: response.expires_in,
+          token: response.access_token,
+          type: TokenType.App,
+        });
+
+      case TokenType.User:
+        const { access_token, refresh_token, scope } = response as UserAccessTokenResponse;
+
+        return await this.tokenRepository.save({
+          expiresIn: response.expires_in,
+          refreshToken: refresh_token,
+          scopes: scope,
+          token: access_token,
+          type: TokenType.User,
+        });
+
+      default:
+        throw new Error(`unknown token type: ${type}`);
+    }
   }
 
-  async findLatestToken() {
+  async getToken(type: TokenType): Promise<Token> {
     const token = await this.tokenRepository.findOne({
       order: { createdAt: 'DESC' },
-      select: {
-        createdAt: true,
-        expiresIn: true,
-        token: true,
-      },
-      where: {},
+      where: { type },
     });
 
-    let newToken: TokenApiResponse;
+    let response: TokenApiResponse;
 
     if (token) {
-      const isValid = await this.validateTokenFromApi(token);
+      const isValid = await this.validateToken(token);
 
       if (isValid) {
         return token;
       }
 
-      console.log('refresh token from api');
-      newToken = await this.refreshTokenFromApi(token);
-    } else {
-      console.log('generate token from api');
-      newToken = await this.getTokenFromApi();
+      console.log(`token is expired: ${token.token}`);
+
+      switch (type) {
+        case TokenType.App:
+          console.log('regenerate app access token from api');
+          response = await this.getAppAccessToken();
+          return await this.saveToken(type, response);
+
+        case TokenType.User:
+          console.log('refresh user access token from api');
+          response = await this.refreshToken(token);
+          return await this.saveToken(type, response);
+      }
     }
 
-    return this.saveToken(newToken);
+    console.log('token is not found');
+
+    switch (type) {
+      case TokenType.App:
+        console.log('generate app access token from api');
+        response = await this.getAppAccessToken();
+        return await this.saveToken(type, response);
+
+      case TokenType.User:
+        throw new Error('user access token is not found');
+    }
+  }
+
+  async generateUserAccessToken(code: string): Promise<Token> {
+    const response = await this.getUserAccessToken(code);
+    return await this.saveToken(TokenType.User, response);
   }
 }

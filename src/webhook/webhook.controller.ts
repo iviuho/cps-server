@@ -8,18 +8,20 @@ import {
   EventsubMessageType,
   WebhookDto,
 } from '@src/api/api.interface';
+import { TokenService } from '@src/api/token/token.service';
 import { WebhookGuard } from './webhook.guard';
 import { WebhookService } from './webhook.service';
 
 @Controller('webhook')
 export class WebhookController {
-  constructor(private readonly webhookService: WebhookService) {}
+  constructor(private readonly tokenService: TokenService, private readonly webhookService: WebhookService) {}
 
   @Get()
   async handleGrantUserRedirection(@Query() query: AuthPayload) {
     if (query.code) {
       const { code, scope } = query as AuthSuccess;
-      console.log({ code, scope: scope.split(' ') });
+      const token = await this.tokenService.generateUserAccessToken(code);
+      console.log({ code, scope: scope.split(' '), token });
 
       return '성공적으로 권한을 부여했습니다.';
     } else {

@@ -9,6 +9,7 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 
+import { TokenType } from '@src/entity/token';
 import { User } from '@src/entity/user';
 
 import { ConfigService } from '@src/config/config.service';
@@ -32,7 +33,7 @@ export class ApiService {
   }
 
   private async getCredential() {
-    const { token } = await this.tokenService.findLatestToken();
+    const { token } = await this.tokenService.getToken(TokenType.App);
 
     return {
       Authorization: `Bearer ${token}`,
