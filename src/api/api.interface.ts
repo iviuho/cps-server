@@ -1,18 +1,18 @@
 import { EventsubStatus } from '@src/entity/eventsub';
 
-export interface TokenApiResponse {
+export interface TokenResponse {
   access_token: string;
   expires_in: number;
   token_type: string;
 }
 
-export interface UserAccessTokenResponse extends TokenApiResponse {
+export interface UserAccessTokenResponse extends TokenResponse {
   refresh_token: string;
   scope: string[];
   token_type: 'bearer';
 }
 
-export type ValidateTokenApiResponse = {
+export type ValidateTokenResponse = {
   client_id: string;
   login: string;
   scopes: string[];
@@ -20,8 +20,8 @@ export type ValidateTokenApiResponse = {
   expires_in: number;
 };
 
-export type GetUserApiRequest = { id: string } | { login: string };
-export type GetUserApiResponse = {
+export type GetUserRequest = { id: string } | { login: string };
+export type GetUserResponse = {
   data: {
     id: string;
     login: string;
@@ -37,7 +37,7 @@ export type GetUserApiResponse = {
   }[];
 };
 
-export type SubscribeApiRequest = {
+export type SubscribeRequest = {
   type: string;
   version: string;
   condition: any;
@@ -65,7 +65,7 @@ export interface Subscription {
   cost: number;
 }
 
-export type SubscribeApiResponse = {
+export type SubscribeResponse = {
   data: Subscription[];
   total: number;
   total_cost: number;
@@ -110,4 +110,30 @@ export interface AuthSuccess extends AuthPayload {
 export interface AuthFailed extends AuthPayload {
   error: string;
   error_description: string;
+}
+
+export interface ExtensionSecret {
+  content: string;
+  active_at: string;
+  expires_at: string;
+}
+
+export interface GetExtensionSecretResponse {
+  data: {
+    format_version: string;
+    secrets: ExtensionSecret[];
+  }[];
+}
+
+export interface JwtPayload {
+  channel_id: string;
+  exp: number;
+  is_unlinked: boolean;
+  opaque_user_id: string;
+  pubsub_perms: {
+    listen: string[];
+    send: string[];
+  };
+  role: 'broadcaster' | 'moderator' | 'viewer' | 'external';
+  user_id?: string;
 }

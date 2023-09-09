@@ -6,7 +6,7 @@ import { Repository } from 'typeorm';
 import { Token, TokenType } from '@src/entity/token';
 
 import { ConfigService } from '@src/config/config.service';
-import { TokenApiResponse, UserAccessTokenResponse, ValidateTokenApiResponse } from '@src/api/api.interface';
+import { TokenResponse, UserAccessTokenResponse, ValidateTokenResponse } from '@src/api/api.interface';
 
 @Injectable()
 export class TokenService {
@@ -18,7 +18,7 @@ export class TokenService {
   ) {}
 
   private async getAppAccessToken() {
-    const response = await this.httpService.axiosRef.post<TokenApiResponse>(
+    const response = await this.httpService.axiosRef.post<TokenResponse>(
       'https://id.twitch.tv/oauth2/token',
       {
         client_id: this.configService.clientId,
@@ -48,7 +48,7 @@ export class TokenService {
   }
 
   private async refreshToken({ refreshToken }: Token) {
-    const response = await this.httpService.axiosRef.post<TokenApiResponse>(
+    const response = await this.httpService.axiosRef.post<TokenResponse>(
       'https://id.twitch.tv/oauth2/token',
       {
         client_id: this.configService.clientId,
@@ -63,7 +63,7 @@ export class TokenService {
   }
 
   private async validateToken({ token }: Token) {
-    const response = await this.httpService.axiosRef.get<ValidateTokenApiResponse>(
+    const response = await this.httpService.axiosRef.get<ValidateTokenResponse>(
       'https://id.twitch.tv/oauth2/validate',
       { headers: { Authorization: `OAuth ${token}` } }
     );
@@ -71,7 +71,7 @@ export class TokenService {
     return response.status === 200;
   }
 
-  private async saveToken(type: TokenType, response: TokenApiResponse | UserAccessTokenResponse): Promise<Token> {
+  private async saveToken(type: TokenType, response: TokenResponse | UserAccessTokenResponse): Promise<Token> {
     switch (type) {
       case TokenType.App:
         return await this.tokenRepository.save({
@@ -102,7 +102,7 @@ export class TokenService {
       where: { type },
     });
 
-    let response: TokenApiResponse;
+    let response: TokenResponse;
 
     if (token) {
       const isValid = await this.validateToken(token);

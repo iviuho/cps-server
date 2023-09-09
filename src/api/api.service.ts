@@ -13,7 +13,13 @@ import { TokenType } from '@src/entity/token';
 import { User } from '@src/entity/user';
 
 import { ConfigService } from '@src/config/config.service';
-import { GetUserApiRequest, GetUserApiResponse, SubscribeApiRequest, SubscribeApiResponse } from './api.interface';
+import {
+  GetExtensionSecretResponse,
+  GetUserRequest,
+  GetUserResponse,
+  SubscribeRequest,
+  SubscribeResponse,
+} from './api.interface';
 import { TokenService } from './token/token.service';
 
 @Injectable()
@@ -37,7 +43,7 @@ export class ApiService {
 
     return {
       Authorization: `Bearer ${token}`,
-      'Client-Id': this.configService.clientId,
+      'Client-Id': this.clientId,
     };
   }
 
@@ -58,8 +64,8 @@ export class ApiService {
     }
   }
 
-  async getUser(params: GetUserApiRequest): Promise<User> {
-    const response = await this.httpService.axiosRef.get<GetUserApiResponse>('https://api.twitch.tv/helix/users', {
+  async getUser(params: GetUserRequest): Promise<User> {
+    const response = await this.httpService.axiosRef.get<GetUserResponse>('https://api.twitch.tv/helix/users', {
       headers: await this.getCredential(),
       params,
     });
@@ -80,10 +86,10 @@ export class ApiService {
     throw this.HttpError(status);
   }
 
-  async subscribeEvent(params: SubscribeApiRequest) {
+  async subscribeEvent(params: SubscribeRequest) {
     params.transport.secret = this.configService.clientSecret;
 
-    const response = await this.httpService.axiosRef.post<SubscribeApiResponse>(
+    const response = await this.httpService.axiosRef.post<SubscribeResponse>(
       'https://api.twitch.tv/helix/eventsub/subscriptions',
       params,
       { headers: await this.getCredential() }
@@ -109,6 +115,25 @@ export class ApiService {
 
     if (status === HttpStatus.NO_CONTENT) {
       return;
+    }
+
+    throw this.HttpError(status);
+  }
+
+  async getExtensionSecret() {
+    const response = await this.httpService.axiosRef.get<GetExtensionSecretResponse>(
+      'https://api.twitch.tv/helix/extensions/jwt/secrets',
+      {
+        headers: await this.getCredential(),
+        params: { extension_id: this.clientId },
+      }
+    );
+
+    const { status, data } = response;
+
+    if (status === HttpStatus.OK) {
+      const [{ secrets }] = data.data;
+      return secrets;
     }
 
     throw this.HttpError(status);
