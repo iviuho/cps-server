@@ -1,13 +1,21 @@
-import { Controller, Get, Param } from '@nestjs/common';
+import { Controller, Get, NotFoundException, Request, UseGuards } from '@nestjs/common';
 
+import { AuthGuard, AuthRequest } from '@src/auth/auth.guard';
 import { AuthorizationService } from './authorization.service';
 
 @Controller('authorization')
 export class AuthorizationController {
   constructor(private readonly authorizationService: AuthorizationService) {}
 
-  @Get(':uid')
-  async getAuthorizationByUserId(@Param('uid') uid: string) {
-    return await this.authorizationService.getAuthorizationByUserId(uid);
+  @UseGuards(AuthGuard)
+  @Get()
+  async getAuthorizationByUserId(@Request() req: AuthRequest) {
+    const { user_id: uid } = req.payload;
+
+    if (uid) {
+      return await this.authorizationService.getAuthorizationByUserId(uid);
+    }
+
+    throw new NotFoundException();
   }
 }

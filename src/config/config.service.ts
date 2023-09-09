@@ -21,6 +21,14 @@ export class ConfigService {
     return this.nestConfigService.getOrThrow<string>('TWITCH_CLIENT_SECRET');
   }
 
+  get extensionSecret() {
+    return this.nestConfigService.getOrThrow<string>('TWITCH_EXTENSION_SECRET');
+  }
+
+  get env() {
+    return process.env.NODE_ENV === 'production' ? 'production' : 'development';
+  }
+
   get rds(): RdsConfig {
     return {
       host: this.nestConfigService.getOrThrow('RDS_HOST'),
