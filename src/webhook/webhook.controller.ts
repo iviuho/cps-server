@@ -1,4 +1,5 @@
 import { BadRequestException, Body, Controller, Get, Header, Headers, Post, Query, UseGuards } from '@nestjs/common';
+import moment from 'moment';
 
 import {
   AuthFailed,
@@ -37,8 +38,14 @@ export class WebhookController {
   @Header('Content-Type', 'text/plain')
   async eventsubListener(
     @Headers(EventsubHeader.MESSAGE_TYPE) messageType: EventsubMessageType,
+    @Headers(EventsubHeader.MESSAGE_TIMESTAMP) timestamp: string,
     @Body() body: WebhookDto
   ) {
+    if (moment.utc().diff(timestamp, 'minutes') > 10) {
+      console.log(`message_timestamp field is older than 10 minutes: ${timestamp}`);
+      return;
+    }
+
     const { subscription } = body;
 
     switch (messageType) {
