@@ -6,6 +6,7 @@ import {
   OneToOne,
   JoinColumn,
   Column,
+  DeleteDateColumn,
 } from 'typeorm';
 
 import { User } from './user';
@@ -17,6 +18,9 @@ export class Authorization {
 
   @CreateDateColumn()
   createdAt: Date;
+
+  @DeleteDateColumn({ nullable: true })
+  deletedAt?: Date;
 
   @UpdateDateColumn()
   updatedAt: Date;
