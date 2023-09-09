@@ -1,5 +1,5 @@
 import { BadRequestException, Body, Controller, Get, Header, Headers, Post, Query, UseGuards } from '@nestjs/common';
-import moment from 'moment';
+import * as moment from 'moment';
 
 import {
   AuthFailed,
