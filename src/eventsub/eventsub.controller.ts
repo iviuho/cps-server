@@ -11,23 +11,33 @@ export class EventsubController {
     return await this.eventsubService.getSubscriptions();
   }
 
-  @Post('/authorization')
+  @Post('authorization')
   async subscribeUserAuthorization() {
     return await this.eventsubService.subscribeUserAuthorization();
   }
 
-  @Delete('/authorization')
+  @Delete('authorization')
   async unsubsribeUserAuthorization() {
     return await this.eventsubService.unsubscribeUserAuthorization();
   }
 
+  @Post('revokation')
+  async subscribeUserRevokation() {
+    return await this.eventsubService.subscribeUserRevokation();
+  }
+
+  @Delete('revokation')
+  async unsubscribeUserRevokation() {
+    return await this.eventsubService.unsubscribeUserRevokation();
+  }
+
   @Post(':channel')
   async subscribe(@Param('channel') channel: string) {
-    return await this.eventsubService.subscribe(channel);
+    return await this.eventsubService.subscribeChannelPointRewardRedemption(channel);
   }
 
   @Delete(':channel')
   async unsubsribe(@Param('channel') channel: string) {
-    return await this.eventsubService.unsubsribe(channel);
+    return await this.eventsubService.unsubscribeChannelPointRewardRedemption(channel);
   }
 }

@@ -29,6 +29,13 @@ export class WebhookService {
         break;
       }
 
+      case 'user.authorization.revoke': {
+        const { client_id, user_id } = event as EventDto.UserAuthorizationRevoke;
+
+        await this.authorizationService.removeAuthorization(client_id, user_id);
+        break;
+      }
+
       case 'channel.channel_points_custom_reward_redemption.add': {
         const {
           broadcaster_user_id: to,
@@ -42,8 +49,8 @@ export class WebhookService {
     }
   }
 
-  async handleVerification(subscriptionId: string) {
-    await this.eventsubService.changeEventsubStatus(subscriptionId, EventsubStatus.ENABLED);
+  async handleVerification(id: string) {
+    await this.eventsubService.changeEventsubStatus(id, EventsubStatus.ENABLED);
   }
 
   async handleRevocation(id: string, status: EventsubStatus) {

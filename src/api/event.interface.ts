@@ -5,6 +5,13 @@ export interface UserAuthorizationGrant {
   user_name: string;
 }
 
+export interface UserAuthorizationRevoke {
+  client_id: string;
+  user_id: string;
+  user_login: string | null;
+  user_name: string | null;
+}
+
 export interface ChannelPointReward {
   id: string;
   title: string;

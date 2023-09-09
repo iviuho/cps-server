@@ -28,4 +28,8 @@ export class AuthorizationService {
 
     return await this.authorizationRepository.save({ clientId, user: { uid } });
   }
+
+  async removeAuthorization(clientId: string, uid: string): Promise<Authorization> {
+    return await this.authorizationRepository.softRemove({ clientId, user: { uid } });
+  }
 }
