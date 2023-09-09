@@ -72,10 +72,10 @@ export type SubscribeApiResponse = {
   max_total_cost: number;
 };
 
-export interface WebhookDto<EventResponse = any> {
+export interface WebhookDto {
   challenge?: string;
   subscription: Subscription;
-  event: EventResponse;
+  event: any;
 }
 
 export const enum EventsubHeader {

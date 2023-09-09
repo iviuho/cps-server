@@ -51,13 +51,13 @@ export class WebhookController {
       case EventsubMessageType.VERIFICATION:
         console.log(`webhook verification: ${subscription.id} - ${subscription.type}`);
 
-        await this.webhookService.enableEventsub(subscription.id);
+        await this.webhookService.handleVerification(subscription.id);
         return body.challenge;
 
       case EventsubMessageType.REVOCATION:
         console.log(`webhook revocation: ${subscription.id} - ${subscription.type}`);
 
-        await this.webhookService.revokeEventsub(subscription.id);
+        await this.webhookService.handleRevocation(subscription.id, subscription.status);
         return;
 
       default:

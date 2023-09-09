@@ -21,14 +21,15 @@ export class WebhookService {
     console.log(event);
 
     switch (type) {
-      case 'user.authorization.grant':
+      case 'user.authorization.grant': {
         const { client_id, user_id, user_login, user_name } = event as EventDto.UserAuthorizationGrant;
 
         const { uid } = await this.userService.createUser(user_id, user_login, user_name);
         await this.authorizationService.createAuthorization(client_id, uid);
         break;
+      }
 
-      case 'channel.channel_points_custom_reward_redemption.add':
+      case 'channel.channel_points_custom_reward_redemption.add': {
         const {
           broadcaster_user_id: to,
           user_id: from,
@@ -37,14 +38,15 @@ export class WebhookService {
 
         await this.commentService.createComment(to, from, content);
         break;
+      }
     }
   }
 
-  async enableEventsub(subscriptionId: string) {
+  async handleVerification(subscriptionId: string) {
     await this.eventsubService.changeEventsubStatus(subscriptionId, EventsubStatus.ENABLED);
   }
 
-  async revokeEventsub(subscriptionId: string) {
-    await this.eventsubService.changeEventsubStatus(subscriptionId, EventsubStatus.AUTHORIZATION_REVOKED);
+  async handleRevocation(id: string, status: EventsubStatus) {
+    await this.eventsubService.changeEventsubStatus(id, status);
   }
 }

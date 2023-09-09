@@ -76,6 +76,17 @@ export class EventsubService {
   }
 
   async changeEventsubStatus(id: string, status: EventsubStatus): Promise<Eventsub> {
+    switch (status) {
+      case EventsubStatus.AUTHORIZATION_REVOKED:
+      case EventsubStatus.FAILED:
+      case EventsubStatus.FAILURES_EXCEEDED:
+      case EventsubStatus.MODERATOR_REMOVED:
+      case EventsubStatus.USER_REMOVED:
+      case EventsubStatus.VERSION_REMOVED:
+        await this.eventsubRepository.softRemove({ id });
+        break;
+    }
+
     return await this.eventsubRepository.save({ id, status });
   }
 }
