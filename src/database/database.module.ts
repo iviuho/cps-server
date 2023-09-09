@@ -19,6 +19,7 @@ import { ConfigService } from '@src/config/config.service';
         type: 'mysql',
         entities: [Authorization, Comment, Eventsub, Token, User],
         synchronize: true,
+        timezone: 'Z',
         ...configService.rds,
       }),
     }),
