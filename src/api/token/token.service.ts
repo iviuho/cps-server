@@ -68,10 +68,14 @@ export class TokenService {
       { headers: { Authorization: `OAuth ${token}` } }
     );
 
-    return response.status === 200;
+    return response.data;
   }
 
-  private async saveToken(type: TokenType, response: TokenResponse | UserAccessTokenResponse): Promise<Token> {
+  private async saveToken(
+    type: TokenType,
+    response: TokenResponse | UserAccessTokenResponse,
+    uid?: string
+  ): Promise<Token> {
     switch (type) {
       case TokenType.App:
         return await this.tokenRepository.save({
@@ -85,6 +89,7 @@ export class TokenService {
 
         return await this.tokenRepository.save({
           expiresIn: response.expires_in,
+          owner: { uid },
           refreshToken: refresh_token,
           scopes: scope,
           token: access_token,
@@ -96,22 +101,33 @@ export class TokenService {
     }
   }
 
-  async getToken(type: TokenType): Promise<Token> {
+  async getToken(type: TokenType, uid?: string): Promise<Token> {
     const token = await this.tokenRepository.findOne({
       order: { createdAt: 'DESC' },
-      where: { type },
+      where: { type, owner: { uid } },
     });
 
     let response: TokenResponse;
 
     if (token) {
-      const isValid = await this.validateToken(token);
+      try {
+        const validation = await this.validateToken(token);
 
-      if (isValid) {
-        return token;
+        if (validation) {
+          await this.tokenRepository.save({
+            expiresIn: validation.expires_in,
+            owner: { uid: validation.user_id },
+            token: token.token,
+          });
+
+          return token;
+        }
+      } catch {
+        console.error('validate token failed');
       }
 
       console.log(`token is expired: ${token.token}`);
+      await this.tokenRepository.remove(token);
 
       switch (type) {
         case TokenType.App:
@@ -122,7 +138,7 @@ export class TokenService {
         case TokenType.User:
           console.log('refresh user access token from api');
           response = await this.refreshToken(token);
-          return await this.saveToken(type, response);
+          return await this.saveToken(type, response, uid);
       }
     }
 
@@ -139,8 +155,8 @@ export class TokenService {
     }
   }
 
-  async generateUserAccessToken(code: string): Promise<Token> {
+  async generateUserAccessToken(code: string, uid?: string): Promise<Token> {
     const response = await this.getUserAccessToken(code);
-    return await this.saveToken(TokenType.User, response);
+    return await this.saveToken(TokenType.User, response, uid);
   }
 }
