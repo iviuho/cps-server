@@ -1,4 +1,6 @@
-import { Entity, Column, CreateDateColumn, UpdateDateColumn, PrimaryColumn } from 'typeorm';
+import { Entity, Column, CreateDateColumn, UpdateDateColumn, PrimaryColumn, ManyToOne } from 'typeorm';
+
+import { User } from './user';
 
 export enum TokenType {
   App = 'app',
@@ -12,6 +14,9 @@ export class Token {
 
   @Column({ enum: TokenType, type: 'enum' })
   type: TokenType;
+
+  @ManyToOne(() => User, user => user.uid)
+  owner?: User;
 
   @Column()
   refreshToken?: string;
