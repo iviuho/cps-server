@@ -1,4 +1,4 @@
-import { Controller, Param, Get, Patch } from '@nestjs/common';
+import { Controller, BadRequestException, Get, Query } from '@nestjs/common';
 
 import { UserService } from './user.service';
 
@@ -6,13 +6,14 @@ import { UserService } from './user.service';
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
-  @Get(':id')
-  async getUser(@Param('id') login: string) {
-    return await this.userService.getUserByLogin(login);
-  }
+  @Get()
+  async getUser(@Query('id') id: string, @Query('login') login: string) {
+    if (id) {
+      return await this.userService.getUserById(id);
+    } else if (login) {
+      return await this.userService.getUserByLogin(login);
+    }
 
-  @Patch(':id')
-  async updateUser(@Param('id') login: string) {
-    return await this.userService.getUserByLoginFromApi(login);
+    throw new BadRequestException();
   }
 }

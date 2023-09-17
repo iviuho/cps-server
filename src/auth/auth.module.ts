@@ -5,6 +5,7 @@ import { AuthController } from './auth.controller';
 import { ConfigModule } from '@src/config/config.module';
 import { ConfigService } from '@src/config/config.service';
 import { TokenModule } from '@src/api/token/token.module';
+import { UserModule } from '@src/user/user.module';
 
 @Module({
   imports: [
@@ -14,6 +15,7 @@ import { TokenModule } from '@src/api/token/token.module';
       useFactory: (configService: ConfigService) => ({ secret: Buffer.from(configService.extensionSecret, 'base64') }),
     }),
     TokenModule,
+    UserModule,
   ],
   controllers: [AuthController],
 })

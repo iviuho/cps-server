@@ -2,6 +2,8 @@ import { CanActivate, ExecutionContext, Injectable, UnauthorizedException } from
 import { JwtService } from '@nestjs/jwt';
 import { Request } from 'express';
 
+import { JsonWebTokenError } from 'jsonwebtoken';
+
 import { JwtPayload } from '@src/api/api.interface';
 
 export interface AuthRequest extends Request {
@@ -25,15 +27,20 @@ export class AuthGuard implements CanActivate {
     }
   }
 
-  canActivate(context: ExecutionContext): boolean {
+  async canActivate(context: ExecutionContext): Promise<boolean> {
     const request: AuthRequest = context.switchToHttp().getRequest();
     const token = this.extractTokenFromHeader(request);
 
     try {
       const payload = this.jwtService.verify<JwtPayload>(token);
-      request.payload = payload;
       console.log(payload);
+
+      request.payload = payload;
     } catch (err) {
+      if (err instanceof JsonWebTokenError) {
+        console.error(err.message);
+      }
+
       throw new UnauthorizedException();
     }
 

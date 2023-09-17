@@ -20,6 +20,11 @@ export type ValidateTokenResponse = {
   expires_in: number;
 };
 
+export enum GetUserType {
+  ID,
+  LOGIN,
+}
+
 export type GetUserRequest = { id: string } | { login: string };
 export type GetUserResponse = {
   data: {

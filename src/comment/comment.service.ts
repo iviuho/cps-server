@@ -25,7 +25,10 @@ export class CommentService {
       relations: { from: true, to: true },
       skip: offset * limit,
       take: limit,
-      where: { to: { login: query.to }, from: { login: query.from } },
+      where: [
+        { to: { uid: query.to }, from: { uid: query.from } },
+        { to: { login: query.to }, from: { login: query.from } },
+      ],
     });
   }
 
