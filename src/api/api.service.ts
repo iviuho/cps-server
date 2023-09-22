@@ -15,6 +15,7 @@ import { User } from '@src/entity/user';
 import { ConfigService } from '@src/config/config.service';
 import {
   GetExtensionSecretResponse,
+  GetSubscriptionListResponse,
   GetUserRequest,
   GetUserResponse,
   SubscribeRequest,
@@ -81,6 +82,21 @@ export class ApiService {
       };
 
       return user;
+    }
+
+    throw this.HttpError(status);
+  }
+
+  async getSubscriptions() {
+    const response = await this.httpService.axiosRef.get<GetSubscriptionListResponse>(
+      'https://api.twitch.tv/helix/eventsub/subscriptions',
+      { headers: await this.getCredential() }
+    );
+
+    const { status, data } = response;
+
+    if (status === HttpStatus.OK) {
+      return data.data;
     }
 
     throw this.HttpError(status);
