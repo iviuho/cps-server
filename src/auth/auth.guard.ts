@@ -2,7 +2,7 @@ import { CanActivate, ExecutionContext, Injectable, UnauthorizedException } from
 import { JwtService } from '@nestjs/jwt';
 import { Request } from 'express';
 
-import { JsonWebTokenError } from 'jsonwebtoken';
+import { JsonWebTokenError, TokenExpiredError } from 'jsonwebtoken';
 
 import { JwtPayload } from '@src/api/api.interface';
 
@@ -27,8 +27,8 @@ export class AuthGuard implements CanActivate {
     }
   }
 
-  async canActivate(context: ExecutionContext): Promise<boolean> {
-    const request: AuthRequest = context.switchToHttp().getRequest();
+  canActivate(context: ExecutionContext): boolean {
+    const request = context.switchToHttp().getRequest<AuthRequest>();
     const token = this.extractTokenFromHeader(request);
 
     try {
@@ -37,7 +37,7 @@ export class AuthGuard implements CanActivate {
 
       request.payload = payload;
     } catch (err) {
-      if (err instanceof JsonWebTokenError) {
+      if (err instanceof JsonWebTokenError || err instanceof TokenExpiredError) {
         console.error(err.message);
       }
 
