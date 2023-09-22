@@ -1,5 +1,3 @@
-import { EventsubStatus } from '@src/entity/eventsub';
-
 export interface TokenResponse {
   access_token: string;
   expires_in: number;
@@ -23,6 +21,16 @@ export type ValidateTokenResponse = {
 export enum GetUserType {
   ID,
   LOGIN,
+}
+
+export interface GetSubscriptionListResponse {
+  data: Subscription[];
+  total: number;
+  total_cost: number;
+  max_total_cost: number;
+  pagination: {
+    cursor?: string;
+  };
 }
 
 export type GetUserRequest = { id: string } | { login: string };
@@ -53,6 +61,17 @@ export type SubscribeRequest = {
     session_id?: string;
   };
 };
+
+export enum EventsubStatus {
+  ENABLED = 'enabled',
+  PENDING = 'webhook_callback_verification_pending',
+  FAILED = 'webhook_callback_verification_failed',
+  FAILURES_EXCEEDED = 'notification_failures_exceeded',
+  AUTHORIZATION_REVOKED = 'authorization_revoked',
+  MODERATOR_REMOVED = 'moderator_removed',
+  USER_REMOVED = 'user_removed',
+  VERSION_REMOVED = 'version_removed',
+}
 
 export interface Subscription {
   id: string;

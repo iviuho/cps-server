@@ -1,10 +1,7 @@
 import { Injectable } from '@nestjs/common';
 
-import { EventsubStatus } from '@src/entity/eventsub';
-
 import { AuthorizationService } from '@src/authorization/authorization.service';
 import { CommentService } from '@src/comment/comment.service';
-import { EventsubService } from '@src/eventsub/eventsub.service';
 import { UserService } from '@src/user/user.service';
 import * as EventDto from '@src/api/event.interface';
 
@@ -13,7 +10,6 @@ export class WebhookService {
   constructor(
     private readonly authorizationService: AuthorizationService,
     private readonly commentService: CommentService,
-    private readonly eventsubService: EventsubService,
     private readonly userService: UserService
   ) {}
 
@@ -47,13 +43,5 @@ export class WebhookService {
         break;
       }
     }
-  }
-
-  async handleVerification(id: string) {
-    await this.eventsubService.changeEventsubStatus(id, EventsubStatus.ENABLED);
-  }
-
-  async handleRevocation(id: string, status: EventsubStatus) {
-    await this.eventsubService.changeEventsubStatus(id, status);
   }
 }
