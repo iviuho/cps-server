@@ -39,11 +39,11 @@ export class EventsubService {
     });
   }
 
-  async subscribeChannelPointRewardRedemption(targetId: string) {
+  async subscribeChannelPointRewardRedemption(broadcasterId: string, rewardId?: string) {
     return await this.apiService.subscribeEvent({
       type: 'channel.channel_points_custom_reward_redemption.add',
       version: '1',
-      condition: { broadcaster_user_id: targetId },
+      condition: { broadcaster_user_id: broadcasterId, reward_id: rewardId },
       transport: {
         method: 'webhook',
         callback: 'https://cps-server.com/webhook',

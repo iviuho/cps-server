@@ -30,8 +30,10 @@ export class EventsubController {
       case 'user.authorization.revoke':
         return await this.eventsubService.subscribeUserRevokation();
 
-      case 'channel.channel_points_custom_reward_redemption.add':
-        return await this.eventsubService.subscribeChannelPointRewardRedemption(condition);
+      case 'channel.channel_points_custom_reward_redemption.add': {
+        const { broadcasterId, rewardId } = condition;
+        return await this.eventsubService.subscribeChannelPointRewardRedemption(broadcasterId, rewardId);
+      }
 
       default:
         throw new BadRequestException();
