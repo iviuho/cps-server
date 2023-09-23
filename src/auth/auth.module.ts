@@ -17,6 +17,7 @@ import { UserModule } from '@src/user/user.module';
     TokenModule,
     UserModule,
   ],
+  exports: [JwtModule],
   controllers: [AuthController],
 })
 export class AuthModule {}

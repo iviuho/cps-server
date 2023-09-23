@@ -1,5 +1,6 @@
-import { BadRequestException, Body, Controller, Delete, Get, Param, Post } from '@nestjs/common';
+import { BadRequestException, Body, Controller, Delete, Get, Param, Post, UseGuards } from '@nestjs/common';
 
+import { AuthGuard } from '@src/auth/auth.guard';
 import { EventsubService } from './eventsub.service';
 import { UserService } from '@src/user/user.service';
 
@@ -8,6 +9,7 @@ export interface CreateEventsubDto {
   condition: any;
 }
 
+@UseGuards(AuthGuard)
 @Controller('eventsub')
 export class EventsubController {
   constructor(private readonly eventsubService: EventsubService, private readonly userService: UserService) {}
@@ -29,8 +31,7 @@ export class EventsubController {
         return await this.eventsubService.subscribeUserRevokation();
 
       case 'channel.channel_points_custom_reward_redemption.add':
-        const target = await this.userService.getUserByLogin(condition);
-        return await this.eventsubService.subscribeChannelPointRewardRedemption(target.uid);
+        return await this.eventsubService.subscribeChannelPointRewardRedemption(condition);
 
       default:
         throw new BadRequestException();
