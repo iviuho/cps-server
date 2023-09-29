@@ -1,6 +1,6 @@
-import { BadRequestException, Body, Controller, Delete, Get, Param, Post, UseGuards } from '@nestjs/common';
+import { BadRequestException, Body, Controller, Delete, Get, Param, Post, Req, UseGuards } from '@nestjs/common';
 
-import { AuthGuard } from '@src/auth/auth.guard';
+import { AuthGuard, AuthRequest } from '@src/auth/auth.guard';
 import { EventsubService } from './eventsub.service';
 import { UserService } from '@src/user/user.service';
 
@@ -20,8 +20,9 @@ export class EventsubController {
   }
 
   @Post()
-  async subscribe(@Body() body: CreateEventsubDto) {
+  async subscribe(@Req() req: AuthRequest, @Body() body: CreateEventsubDto) {
     const { type, condition } = body;
+    const { payload } = req;
 
     switch (type) {
       case 'user.authorization.grant':
@@ -31,8 +32,8 @@ export class EventsubController {
         return await this.eventsubService.subscribeUserRevokation();
 
       case 'channel.channel_points_custom_reward_redemption.add': {
-        const { broadcasterId, rewardId } = condition;
-        return await this.eventsubService.subscribeChannelPointRewardRedemption(broadcasterId, rewardId);
+        const { rewardId } = condition;
+        return await this.eventsubService.subscribeChannelPointRewardRedemption(payload.channel_id, rewardId);
       }
 
       default:
