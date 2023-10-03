@@ -14,6 +14,7 @@ import { User } from '@src/entity/user';
 
 import { ConfigService } from '@src/config/config.service';
 import {
+  GetExtensionResponse,
   GetExtensionSecretResponse,
   GetSubscriptionListResponse,
   GetUserRequest,
@@ -131,6 +132,28 @@ export class ApiService {
 
     if (status === HttpStatus.NO_CONTENT) {
       return;
+    }
+
+    throw this.HttpError(status);
+  }
+
+  async getExtension(externalToken: string) {
+    const response = await this.httpService.axiosRef.get<GetExtensionResponse>(
+      'https://api.twitch.tv/helix/extensions',
+      {
+        headers: {
+          Authorization: `Bearer ${externalToken}`,
+          'Client-Id': this.clientId,
+        },
+        params: { extension_id: this.clientId },
+      }
+    );
+
+    const { status, data } = response;
+
+    if (status === HttpStatus.OK) {
+      const [extension] = data.data;
+      return extension;
     }
 
     throw this.HttpError(status);

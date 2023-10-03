@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { HttpService } from '@nestjs/axios';
+import { JwtService } from '@nestjs/jwt';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 
@@ -13,6 +14,7 @@ export class TokenService {
   constructor(
     @InjectRepository(Token)
     private readonly tokenRepository: Repository<Token>,
+    private readonly jwtService: JwtService,
     private readonly httpService: HttpService,
     private readonly configService: ConfigService
   ) {}
@@ -158,5 +160,14 @@ export class TokenService {
   async generateUserAccessToken(code: string, uid?: string): Promise<Token> {
     const response = await this.getUserAccessToken(code);
     return await this.saveToken(TokenType.User, response, uid);
+  }
+
+  generateExternalToken(uid: string): string {
+    const payload = {
+      user_id: uid,
+      role: 'external',
+    };
+
+    return this.jwtService.sign(payload, { expiresIn: '1 days' });
   }
 }

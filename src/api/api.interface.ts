@@ -142,6 +142,74 @@ export interface ExtensionSecret {
   expires_at: string;
 }
 
+export enum ExtensionState {
+  APPROVED = 'Approved',
+  ASSET_UPLOADED = 'AssetsUploaded',
+  DELETED = 'Deleted',
+  DEPRECATED = 'Deprecated',
+  IN_REVIEW = 'InReview',
+  IN_TEST = 'InTest',
+  PENDING_ACTION = 'PendingAction',
+  REJECTED = 'Rejected',
+  RELEASED = 'Released',
+}
+
+export interface Extension {
+  author_name: string;
+  bits_enabled: boolean;
+  can_install: boolean;
+  configuration_location: 'hosted' | 'custom' | 'none';
+  description: string;
+  eula_tos_url: string;
+  has_chat_support: boolean;
+  icon_url: string;
+  icon_urls: Map<string, string>;
+  id: string;
+  name: string;
+  privacy_policy_url: string;
+  request_identity_link: boolean;
+  screenshot_urls: string[];
+  state: ExtensionState;
+  subscriptions_support_level: 'none' | 'optional';
+  summary: string;
+  support_email: string;
+  version: string;
+  viewer_summary: string;
+  views: {
+    mobile: {
+      viewer_url: string;
+    };
+    panel: {
+      viewer_url: string;
+      height: number;
+      can_link_external_content: boolean;
+    };
+    video_overlay: {
+      viewer_url: string;
+      can_link_external_content: boolean;
+    };
+    component: {
+      viewer_url: string;
+      aspect_ratio_x: number;
+      aspect_ratio_y: number;
+      autoscale: boolean;
+      scale_pixels: number;
+      target_height: number;
+      can_link_external_content: boolean;
+    };
+    config: {
+      viewer_url: string;
+      can_link_external_content: boolean;
+    };
+  };
+  allowlisted_config_urls: string[];
+  allowlisted_panel_urls: string[];
+}
+
+export interface GetExtensionResponse {
+  data: Extension[];
+}
+
 export interface GetExtensionSecretResponse {
   data: {
     format_version: string;

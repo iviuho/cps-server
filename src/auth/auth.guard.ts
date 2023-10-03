@@ -7,6 +7,7 @@ import { JsonWebTokenError, TokenExpiredError } from 'jsonwebtoken';
 import { JwtPayload } from '@src/api/api.interface';
 
 export interface AuthRequest extends Request {
+  authorization: string;
   payload: JwtPayload;
 }
 
@@ -35,6 +36,7 @@ export class AuthGuard implements CanActivate {
       const payload = this.jwtService.verify<JwtPayload>(token);
       console.log(payload);
 
+      request.authorization = token;
       request.payload = payload;
     } catch (err) {
       if (err instanceof JsonWebTokenError || err instanceof TokenExpiredError) {
