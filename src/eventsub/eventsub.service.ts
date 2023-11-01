@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 
-import { ApiService } from '@src/api/api.service';
+import { ApiService } from '@src/twitch/api.service';
 
 @Injectable()
 export class EventsubService {

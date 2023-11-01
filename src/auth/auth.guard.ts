@@ -4,7 +4,7 @@ import { Request } from 'express';
 
 import { JsonWebTokenError, TokenExpiredError } from 'jsonwebtoken';
 
-import { JwtPayload } from '@src/api/api.interface';
+import { JwtPayload } from '@src/twitch/api.interface';
 
 export interface AuthRequest extends Request {
   authorization: string;

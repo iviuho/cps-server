@@ -4,8 +4,8 @@ import { Repository } from 'typeorm';
 
 import { User } from '@src/entity/user';
 
-import { ApiService } from '@src/api/api.service';
-import { GetUserType } from '@src/api/api.interface';
+import { ApiService } from '@src/twitch/api.service';
+import { GetUserType } from '@src/twitch/api.interface';
 
 @Injectable()
 export class UserService {

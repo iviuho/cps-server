@@ -4,8 +4,8 @@ import qs from 'qs';
 import { TokenType } from '@src/entity/token';
 
 import { AuthGuard, AuthRequest } from './auth.guard';
-import { ApiService } from '@src/api/api.service';
-import { TokenService } from '@src/api/token/token.service';
+import { ApiService } from '@src/twitch/api.service';
+import { TokenService } from '@src/twitch/token/token.service';
 import { UserService } from '@src/user/user.service';
 
 @UseGuards(AuthGuard)

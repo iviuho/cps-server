@@ -3,7 +3,7 @@ import { Injectable } from '@nestjs/common';
 import { AuthorizationService } from '@src/authorization/authorization.service';
 import { CommentService } from '@src/comment/comment.service';
 import { UserService } from '@src/user/user.service';
-import * as EventDto from '@src/api/event.interface';
+import * as EventDto from '@src/twitch/event.interface';
 
 @Injectable()
 export class WebhookService {

@@ -8,8 +8,8 @@ import {
   EventsubHeader,
   EventsubMessageType,
   WebhookDto,
-} from '@src/api/api.interface';
-import { TokenService } from '@src/api/token/token.service';
+} from '@src/twitch/api.interface';
+import { TokenService } from '@src/twitch/token/token.service';
 import { WebhookGuard } from './webhook.guard';
 import { WebhookService } from './webhook.service';
 

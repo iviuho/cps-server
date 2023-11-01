@@ -7,7 +7,7 @@ import { Repository } from 'typeorm';
 import { Token, TokenType } from '@src/entity/token';
 
 import { ConfigService } from '@src/config/config.service';
-import { TokenResponse, UserAccessTokenResponse, ValidateTokenResponse } from '@src/api/api.interface';
+import { TokenResponse, UserAccessTokenResponse, ValidateTokenResponse } from '@src/twitch/api.interface';
 
 @Injectable()
 export class TokenService {

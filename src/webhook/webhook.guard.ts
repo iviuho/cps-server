@@ -3,7 +3,7 @@ import { Request } from 'express';
 import * as crypto from 'crypto';
 
 import { ConfigService } from '@src/config/config.service';
-import { EventsubHeader } from '@src/api/api.interface';
+import { EventsubHeader } from '@src/twitch/api.interface';
 
 @Injectable()
 export class WebhookGuard implements CanActivate {

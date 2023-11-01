@@ -3,7 +3,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 
 import { User } from '@src/entity/user';
 
-import { ApiModule } from '@src/api/api.module';
+import { ApiModule } from '@src/twitch/api.module';
 import { UserController } from './user.controller';
 import { UserService } from './user.service';
 
