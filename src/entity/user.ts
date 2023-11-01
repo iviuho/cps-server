@@ -1,6 +1,4 @@
-import { Entity, Column, PrimaryColumn, OneToMany } from 'typeorm';
-
-import { Comment } from './comment';
+import { Entity, Column, PrimaryColumn } from 'typeorm';
 
 @Entity()
 export class User {
@@ -12,7 +10,4 @@ export class User {
 
   @Column()
   nickname: string;
-
-  @OneToMany(() => Comment, comment => comment.to)
-  comments?: Comment[];
 }

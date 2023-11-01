@@ -2,7 +2,6 @@ import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 
 import { Authorization } from '@src/entity/authorization';
-import { Comment } from '@src/entity/comment';
 import { Token } from '@src/entity/token';
 import { User } from '@src/entity/user';
 
@@ -16,7 +15,7 @@ import { ConfigService } from '@src/config/config.service';
       inject: [ConfigService],
       useFactory: (configService: ConfigService) => ({
         type: 'mysql',
-        entities: [Authorization, Comment, Token, User],
+        entities: [Authorization, Token, User],
         synchronize: true,
         timezone: 'Z',
         ...configService.rds,

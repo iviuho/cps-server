@@ -1,17 +1,12 @@
 import { Injectable } from '@nestjs/common';
 
 import { AuthorizationService } from '@src/authorization/authorization.service';
-import { CommentService } from '@src/comment/comment.service';
 import { UserService } from '@src/user/user.service';
 import * as EventDto from '@src/twitch/event.interface';
 
 @Injectable()
 export class WebhookService {
-  constructor(
-    private readonly authorizationService: AuthorizationService,
-    private readonly commentService: CommentService,
-    private readonly userService: UserService
-  ) {}
+  constructor(private readonly authorizationService: AuthorizationService, private readonly userService: UserService) {}
 
   async handleNotification(type: string, event: any) {
     console.log(event);
@@ -29,17 +24,6 @@ export class WebhookService {
         const { client_id, user_id } = event as EventDto.UserAuthorizationRevoke;
 
         await this.authorizationService.removeAuthorization(client_id, user_id);
-        break;
-      }
-
-      case 'channel.channel_points_custom_reward_redemption.add': {
-        const {
-          broadcaster_user_id: to,
-          user_id: from,
-          user_input: content,
-        } = event as EventDto.ChannelPointCustomRewardRedemptionAdd;
-
-        await this.commentService.createComment(to, from, content);
         break;
       }
     }
