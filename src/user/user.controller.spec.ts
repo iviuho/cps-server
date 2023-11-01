@@ -4,7 +4,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 
 import { User } from '@src/entity/user';
 
-import { DatabaseModule } from '@src/database/database.module';
+import { DatabaseModule } from '@src/utils/database/database.module';
 import { UserController } from './user.controller';
 import { UserService } from './user.service';
 
@@ -13,11 +13,7 @@ describe('UserController', () => {
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      imports: [
-        ConfigModule.forRoot(),
-        DatabaseModule,
-        TypeOrmModule.forFeature([User]),
-      ],
+      imports: [ConfigModule.forRoot(), DatabaseModule, TypeOrmModule.forFeature([User])],
       controllers: [UserController],
       providers: [UserService],
     }).compile();

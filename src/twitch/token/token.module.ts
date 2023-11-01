@@ -5,8 +5,8 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 
 import { Token } from '@src/entity/token';
 
-import { ConfigModule } from '@src/config/config.module';
-import { ConfigService } from '@src/config/config.service';
+import { ConfigModule } from '@src/utils/config/config.module';
+import { ConfigService } from '@src/utils/config/config.service';
 import { TokenService } from './token.service';
 
 @Module({

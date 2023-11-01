@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
 
 import { AuthorizationModule } from '@src/authorization/authorization.module';
-import { ConfigModule } from '@src/config/config.module';
+import { ConfigModule } from '@src/utils/config/config.module';
 import { TokenModule } from '@src/twitch/token/token.module';
 import { UserModule } from '@src/user/user.module';
 import { WebhookController } from './webhook.controller';

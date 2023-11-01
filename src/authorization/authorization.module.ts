@@ -6,8 +6,8 @@ import { Authorization } from '@src/entity/authorization';
 
 import { AuthorizationController } from './authorization.controller';
 import { AuthorizationService } from './authorization.service';
-import { ConfigModule } from '@src/config/config.module';
-import { ConfigService } from '@src/config/config.service';
+import { ConfigModule } from '@src/utils/config/config.module';
+import { ConfigService } from '@src/utils/config/config.service';
 
 @Module({
   imports: [

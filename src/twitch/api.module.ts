@@ -2,7 +2,7 @@ import { Module } from '@nestjs/common';
 import { HttpModule } from '@nestjs/axios';
 
 import { ApiService } from './api.service';
-import { ConfigModule } from '@src/config/config.module';
+import { ConfigModule } from '@src/utils/config/config.module';
 import { TokenModule } from './token/token.module';
 
 @Module({

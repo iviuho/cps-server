@@ -5,8 +5,8 @@ import { Authorization } from '@src/entity/authorization';
 import { Token } from '@src/entity/token';
 import { User } from '@src/entity/user';
 
-import { ConfigModule } from '@src/config/config.module';
-import { ConfigService } from '@src/config/config.service';
+import { ConfigModule } from '@src/utils/config/config.module';
+import { ConfigService } from '@src/utils/config/config.service';
 
 @Module({
   imports: [

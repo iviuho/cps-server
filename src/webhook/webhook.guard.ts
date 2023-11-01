@@ -2,7 +2,7 @@ import { CanActivate, ExecutionContext, Injectable } from '@nestjs/common';
 import { Request } from 'express';
 import * as crypto from 'crypto';
 
-import { ConfigService } from '@src/config/config.service';
+import { ConfigService } from '@src/utils/config/config.service';
 import { EventsubHeader } from '@src/twitch/api.interface';
 
 @Injectable()

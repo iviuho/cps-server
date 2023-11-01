@@ -12,7 +12,7 @@ import {
 import { TokenType } from '@src/entity/token';
 import { User } from '@src/entity/user';
 
-import { ConfigService } from '@src/config/config.service';
+import { ConfigService } from '@src/utils/config/config.service';
 import {
   GetExtensionResponse,
   GetExtensionSecretResponse,
