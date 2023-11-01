@@ -12,10 +12,6 @@ export class AuthorizationController {
   async getAuthorizationByUserId(@Request() req: AuthRequest) {
     const { user_id: uid } = req.payload;
 
-    if (uid) {
-      return await this.authorizationService.getAuthorizationByUserId(uid);
-    }
-
-    throw new NotFoundException();
+    return await this.authorizationService.getAuthorizationByUserId(uid);
   }
 }

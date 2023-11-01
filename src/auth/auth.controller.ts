@@ -21,10 +21,6 @@ export class AuthController {
   async getToken(@Req() req: AuthRequest, @Query('code') code: string) {
     const { user_id: uid } = req.payload;
 
-    if (uid === undefined) {
-      throw new Error('uid is not found');
-    }
-
     if (code) {
       await this.userService.getUserById(uid);
       return await this.tokenSerivce.generateUserAccessToken(code, uid);
@@ -40,10 +36,6 @@ export class AuthController {
   @Get('redirect')
   async getRedirectUri(@Req() req: AuthRequest) {
     const { user_id: uid } = req.payload;
-
-    if (uid === undefined) {
-      throw new Error('uid is not found');
-    }
 
     const externalToken = this.tokenSerivce.generateExternalToken(uid);
     const extension = await this.apiService.getExtension(externalToken);

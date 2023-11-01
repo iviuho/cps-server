@@ -6,9 +6,13 @@ import { JsonWebTokenError, TokenExpiredError } from 'jsonwebtoken';
 
 import { JwtPayload } from '@src/twitch/api.interface';
 
+export interface Payload extends JwtPayload {
+  user_id: string;
+}
+
 export interface AuthRequest extends Request {
   authorization: string;
-  payload: JwtPayload;
+  payload: Payload;
 }
 
 @Injectable()
@@ -36,8 +40,12 @@ export class AuthGuard implements CanActivate {
       const payload = this.jwtService.verify<JwtPayload>(token);
       console.log(payload);
 
+      if (payload.user_id === undefined) {
+        throw new Error('user id is not found');
+      }
+
       request.authorization = token;
-      request.payload = payload;
+      request.payload = payload as Payload;
     } catch (err) {
       if (err instanceof JsonWebTokenError || err instanceof TokenExpiredError) {
         console.error(err.message);
